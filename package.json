@@ -1,0 +1,23 @@
+{
+  "name": "activityservice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CU-Assemble/activityService.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CU-Assemble/activityService/issues"
+  },
+  "homepage": "https://github.com/CU-Assemble/activityService#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
