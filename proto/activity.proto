@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package activityroute;
+
+import "google/protobuf/timestamp.proto";
+
+service activityroute {
+    rpc CreateActivity(activity) returns (Response);
+    rpc GetActivitys(empty) returns (stream activity);
+    rpc GetActivity(activityId) returns (activity);
+    rpc EditActivity(activity) returns (Response);
+    rpc DeleteActivity(activityId) returns (Response);
+}
+
+message empty {}
+
+message activityId {
+  string id = 1;
+}
+
+message activity {
+    string Name = 1;
+    string Description = 2;
+    string ImageProfile = 3;
+    ListOfStrings Type = 4;
+    string OwnerId = 5;
+    string Location = 6;
+    int64 MaxParticipant = 7;
+    ListOfStrings Participant = 8;
+    google.protobuf.Timestamp Date = 9;
+    int32 Duration = 10;
+    string ChatId = 11;
+}
+
+message ListOfStrings {
+    repeated string strings = 1;
+}
+
+
+message Response {
+    int64 Status = 1;
+    string Message = 2;
+  }

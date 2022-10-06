@@ -21,10 +21,10 @@ Content-Type: application/json
 
 
 ### get activity
-GET http://localhost:6050/activity/63305b338cf996e6512f2990
+GET http://localhost:6050/activity/6335afde1b45dc5eb54b914c
 
 ### Edit activity
-PUT http://localhost:6050/activity/63305b338cf996e6512f2990
+PUT http://localhost:6050/activity/6335afde1b45dc5eb54b914c
 Content-Type: application/json
 
 {
@@ -35,11 +35,11 @@ Content-Type: application/json
 	"ownerId": 		"a92dikjsiao92nfaoiw",
 	"location":		"Siam park",
 	"maxParticipant":	15,
-	"participant":   ["a92dikjsiao92nfaoiw"],
+	"participant":   ["a92dikjsiao92nfaoiw","Bruh"],
 	"date":			"2510-04-04T07:00:00.000Z",
 	"duration":		"3 hours and  a half",
 	"chatId":			"09jdao92ndnawndsak"
 }
 
 ### Get activity
-DELETE  http://localhost:6050/activity/633059894cb26b465ec24a46
+DELETE  http://localhost:6050/activity/6335afde1b45dc5eb54b914c

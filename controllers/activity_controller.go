@@ -37,7 +37,6 @@ func CreateActivity() gin.HandlerFunc {
         }
 
         newUser := models.Activity{
-            Id:       		primitive.NewObjectID(),
             Name:      		activity.Name,
 			Description: 	activity.Description,
 			ImageProfile:	activity.ImageProfile,
@@ -117,7 +116,7 @@ func EditActivity() gin.HandlerFunc {
 			"ChatId":			activity.ChatId,
         }
 
-		result, err := activityCollection.UpdateOne(ctx, bson.M{"id": objId}, bson.M{"$set": update})
+		result, err := activityCollection.UpdateOne(ctx, bson.M{"_id": objId}, bson.M{"$set": update})
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.ActivityResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
@@ -127,7 +126,7 @@ func EditActivity() gin.HandlerFunc {
 		//get updated user details
 		var updatedActivity models.Activity
 		if result.MatchedCount == 1 {
-			err := activityCollection.FindOne(ctx, bson.M{"id": objId}).Decode(&updatedActivity)
+			err := activityCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&updatedActivity)
 
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, responses.ActivityResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
@@ -148,7 +147,7 @@ func DeleteActivity() gin.HandlerFunc {
 
 		objId, _ := primitive.ObjectIDFromHex(activityId)
 
-		result, err := activityCollection.DeleteOne(ctx, bson.M{"id": objId})
+		result, err := activityCollection.DeleteOne(ctx, bson.M{"_id": objId})
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, responses.ActivityResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})

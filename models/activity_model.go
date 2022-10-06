@@ -1,13 +1,11 @@
 package models
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
 
 type Activity struct{
-	Id       			primitive.ObjectID `json:"id,omitempty"`
 	Name 				string `json:"activityName" validate:"required"`
 	Description 		string  `json: "description"`
 	ImageProfile 		string `json: "imageProfile"`
