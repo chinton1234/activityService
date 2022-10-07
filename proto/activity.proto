@@ -23,20 +23,15 @@ message Activity {
     string Name = 1;
     string Description = 2;
     string ImageProfile = 3;
-    ListOfStrings Type = 4;
+    repeated string Type = 4;
     string OwnerId = 5;
     string Location = 6;
     int64 MaxParticipant = 7;
-    ListOfStrings Participant = 8;
-    // google.protobuf.Timestamp Date = 9;
+    repeated string Participant = 8;
+    string Date = 9;
     int32 Duration = 10;
     string ChatId = 11;
 }
-
-message ListOfStrings {
-    repeated string strings = 1;
-}
-
 
 message Response {
     int64 Status = 1;

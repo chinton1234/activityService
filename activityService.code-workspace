@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "proto"
+		},
+		{
+			"path": "server"
+		},
+		{
+			"path": "client"
+		},
+		{
+			"path": "old_module(for normal REST)"
+		}
+	],
+	"settings": {}
+}
