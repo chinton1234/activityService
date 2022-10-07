@@ -1,24 +1,25 @@
 syntax = "proto3";
 
-package activityroute;
+package activity;
 
-import "google/protobuf/timestamp.proto";
+option go_package="./services";
+// import "google/protobuf/timestamp.proto";
 
-service activityroute {
-    rpc CreateActivity(activity) returns (Response);
-    rpc GetActivitys(empty) returns (stream activity);
-    rpc GetActivity(activityId) returns (activity);
-    rpc EditActivity(activity) returns (Response);
-    rpc DeleteActivity(activityId) returns (Response);
+service activity {
+    rpc CreateActivity(Activity) returns (Response);
+    rpc GetActivitys(Empty) returns (stream Activity);
+    rpc GetActivity(ActivityId) returns (Activity);
+    rpc EditActivity(Activity) returns (Response);
+    rpc DeleteActivity(ActivityId) returns (Response);
 }
 
-message empty {}
+message Empty {}
 
-message activityId {
+message ActivityId {
   string id = 1;
 }
 
-message activity {
+message Activity {
     string Name = 1;
     string Description = 2;
     string ImageProfile = 3;
@@ -27,7 +28,7 @@ message activity {
     string Location = 6;
     int64 MaxParticipant = 7;
     ListOfStrings Participant = 8;
-    google.protobuf.Timestamp Date = 9;
+    // google.protobuf.Timestamp Date = 9;
     int32 Duration = 10;
     string ChatId = 11;
 }
