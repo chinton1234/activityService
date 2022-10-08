@@ -6,13 +6,14 @@ import (
 )
 
 type ActivityService interface {
+	CreateActivity(req Activity) error
 }
 
 type activityService struct {
-	activityClient activityClient
+	activityClient ActivityClient
 }
 
-func NewActivityService(activityClient activityClient) activityService {
+func NewActivityService(activityClient ActivityClient) activityService {
 	return activityService{activityClient}
 }
 
@@ -37,8 +38,8 @@ func (base activityService) CreateActivity(req Activity) error {
 	}
 
 	fmt.Printf("Service: Create Activity\n")
-	fmt.Printf("Request : %v\n",req.Name)
-	fmt.Printf("Response: %v %v\n",res.Status,res.Message)
+	fmt.Printf("Request : %v\n", req.Name)
+	fmt.Printf("Response: %v %v\n", res.Status, res.Message)
 	return nil
 }
 

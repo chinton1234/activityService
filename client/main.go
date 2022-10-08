@@ -4,12 +4,15 @@ import (
 	"log"
 
 	"client/services"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
 
-	cc,err := grpc.Dial("localhost:8080")
+	creds := insecure.NewCredentials()
+	cc,err := grpc.Dial("localhost:8080",grpc.WithTransportCredentials(creds))
 
 	if err != nil {
 		log.Fatal(err)

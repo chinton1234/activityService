@@ -7,7 +7,7 @@ option go_package="./services";
 
 service activity {
     rpc CreateActivity(Activity) returns (Response);
-    rpc GetActivitys(Empty) returns (stream Activity);
+    rpc GetActivitys(Empty) returns (ActivityList);
     rpc GetActivity(ActivityId) returns (Activity);
     rpc EditActivity(Activity) returns (Response);
     rpc DeleteActivity(ActivityId) returns (Response);
@@ -29,8 +29,13 @@ message Activity {
     int64 MaxParticipant = 7;
     repeated string Participant = 8;
     string Date = 9;
-    int32 Duration = 10;
+    string Duration = 10;
     string ChatId = 11;
+    string ActivityId = 12;
+}
+
+message ActivityList{
+  repeated Activity data = 1;
 }
 
 message Response {

@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityClient interface {
 	CreateActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error)
-	GetActivitys(ctx context.Context, in *Empty, opts ...grpc.CallOption) (Activity_GetActivitysClient, error)
+	GetActivitys(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ActivityList, error)
 	GetActivity(ctx context.Context, in *ActivityId, opts ...grpc.CallOption) (*Activity, error)
 	EditActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error)
 	DeleteActivity(ctx context.Context, in *ActivityId, opts ...grpc.CallOption) (*Response, error)
@@ -46,36 +46,13 @@ func (c *activityClient) CreateActivity(ctx context.Context, in *Activity, opts 
 	return out, nil
 }
 
-func (c *activityClient) GetActivitys(ctx context.Context, in *Empty, opts ...grpc.CallOption) (Activity_GetActivitysClient, error) {
-	stream, err := c.cc.NewStream(ctx, &Activity_ServiceDesc.Streams[0], "/activity.activity/GetActivitys", opts...)
+func (c *activityClient) GetActivitys(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ActivityList, error) {
+	out := new(ActivityList)
+	err := c.cc.Invoke(ctx, "/activity.activity/GetActivitys", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &activityGetActivitysClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type Activity_GetActivitysClient interface {
-	Recv() (*Activity, error)
-	grpc.ClientStream
-}
-
-type activityGetActivitysClient struct {
-	grpc.ClientStream
-}
-
-func (x *activityGetActivitysClient) Recv() (*Activity, error) {
-	m := new(Activity)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 func (c *activityClient) GetActivity(ctx context.Context, in *ActivityId, opts ...grpc.CallOption) (*Activity, error) {
@@ -110,7 +87,7 @@ func (c *activityClient) DeleteActivity(ctx context.Context, in *ActivityId, opt
 // for forward compatibility
 type ActivityServer interface {
 	CreateActivity(context.Context, *Activity) (*Response, error)
-	GetActivitys(*Empty, Activity_GetActivitysServer) error
+	GetActivitys(context.Context, *Empty) (*ActivityList, error)
 	GetActivity(context.Context, *ActivityId) (*Activity, error)
 	EditActivity(context.Context, *Activity) (*Response, error)
 	DeleteActivity(context.Context, *ActivityId) (*Response, error)
@@ -124,8 +101,8 @@ type UnimplementedActivityServer struct {
 func (UnimplementedActivityServer) CreateActivity(context.Context, *Activity) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateActivity not implemented")
 }
-func (UnimplementedActivityServer) GetActivitys(*Empty, Activity_GetActivitysServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetActivitys not implemented")
+func (UnimplementedActivityServer) GetActivitys(context.Context, *Empty) (*ActivityList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActivitys not implemented")
 }
 func (UnimplementedActivityServer) GetActivity(context.Context, *ActivityId) (*Activity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivity not implemented")
@@ -167,25 +144,22 @@ func _Activity_CreateActivity_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Activity_GetActivitys_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Empty)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _Activity_GetActivitys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(ActivityServer).GetActivitys(m, &activityGetActivitysServer{stream})
-}
-
-type Activity_GetActivitysServer interface {
-	Send(*Activity) error
-	grpc.ServerStream
-}
-
-type activityGetActivitysServer struct {
-	grpc.ServerStream
-}
-
-func (x *activityGetActivitysServer) Send(m *Activity) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(ActivityServer).GetActivitys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/activity.activity/GetActivitys",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActivityServer).GetActivitys(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Activity_GetActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -254,6 +228,10 @@ var Activity_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Activity_CreateActivity_Handler,
 		},
 		{
+			MethodName: "GetActivitys",
+			Handler:    _Activity_GetActivitys_Handler,
+		},
+		{
 			MethodName: "GetActivity",
 			Handler:    _Activity_GetActivity_Handler,
 		},
@@ -266,12 +244,6 @@ var Activity_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Activity_DeleteActivity_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetActivitys",
-			Handler:       _Activity_GetActivitys_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "activity.proto",
 }
