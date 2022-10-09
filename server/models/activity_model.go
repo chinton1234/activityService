@@ -15,7 +15,7 @@ type Activity struct{
 	MaxParticipant		int `json: "maxParticipant" validate:"required"`
 	Participant			[]string `json: "participant"`
 	Date				time.Time `json: "date"`
-	Duration			string `json: "duration"`
+	Duration			int64 `json: "duration"`
 	ChatId   			string `json: "chatId"`
 } 
 // activityName   description   imageProfile   activityType   ownerId    location  maxParticipant   participant(list) date   duration  chatId    

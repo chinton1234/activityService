@@ -29,7 +29,7 @@ message Activity {
     int64 MaxParticipant = 7;
     repeated string Participant = 8;
     string Date = 9;
-    string Duration = 10;
+    int64 Duration = 10;
     string ChatId = 11;
     string ActivityId = 12;
 }
