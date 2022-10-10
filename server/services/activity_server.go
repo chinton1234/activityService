@@ -13,10 +13,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-
 var activityCollection *mongo.Collection = configs.GetCollection(configs.DB, "activitys")
 var validate = validator.New()
-
 
 type activityServer struct {
 }
@@ -38,7 +36,7 @@ func (activityServer) CreateActivity(ctx context.Context, req *Activity) (*Respo
 
 	fmt.Println("create activity.")
 	layout := "2006-01-02T15:04:05.000Z"
-	time, err := time.Parse(layout,req.Date)
+	time, err := time.Parse(layout, req.Date)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("")
@@ -46,37 +44,38 @@ func (activityServer) CreateActivity(ctx context.Context, req *Activity) (*Respo
 	}
 
 	newUser := models.Activity{
-		Name:      		req.Name,
-		Description: 	req.Description,
-		ImageProfile:	req.ImageProfile,
-		Type:			req.Type,
-		OwnerId: 		req.OwnerId,
-		Location:		req.Location,
-		MaxParticipant:	int(req.MaxParticipant),
+		Name:           req.Name,
+		Description:    req.Description,
+		ImageProfile:   req.ImageProfile,
+		Type:           req.Type,
+		OwnerId:        req.OwnerId,
+		Location:       req.Location,
+		MaxParticipant: int(req.MaxParticipant),
 		Participant:    req.Participant,
-		Date:			time,
-		Duration:		req.Duration,
-		ChatId:			req.ChatId,
+		Date:           time,
+		Duration:       req.Duration,
+		ChatId:         req.ChatId,
 	}
 
 	result, err := activityCollection.InsertOne(ctx, newUser)
-    if err != nil {
-        fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
 		fmt.Println("")
 		return nil, err
-    }
+	}
 
-	fmt.Println(result)
+	ID := fmt.Sprintf("%v", result.InsertedID)
 	res := Response{
 		Status:  200,
-		Message: "Activity Saved.",
+		Message: ID,
 	}
+
 	fmt.Println("Complete.")
 	fmt.Println("")
 	return &res, nil
 }
 
-func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, error){
+func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, error) {
 	fmt.Println("Get All activity.")
 
 	var activitys []*Activity
@@ -101,28 +100,28 @@ func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, erro
 		}
 
 		var one = Activity{
-			Name:      		req.Name,
-			Description: 	req.Description,
-			ImageProfile:	req.ImageProfile,
-			Type:			req.Type,
-			OwnerId: 		req.OwnerId,
-			Location:		req.Location,
-			MaxParticipant:	int64(req.MaxParticipant),
+			ActivityId:     req.ID.Hex(),
+			Name:           req.Name,
+			Description:    req.Description,
+			ImageProfile:   req.ImageProfile,
+			Type:           req.Type,
+			OwnerId:        req.OwnerId,
+			Location:       req.Location,
+			MaxParticipant: int64(req.MaxParticipant),
 			Participant:    req.Participant,
-			Date:			req.Date.String(),
-			Duration:		req.Duration,
-			ChatId:			req.ChatId,
-			ActivityId:     "",
+			Date:           req.Date.String(),
+			Duration:       req.Duration,
+			ChatId:         req.ChatId,
 		}
 
 		activitys = append(activitys, &one)
 	}
 
 	var data = ActivityList{
-		 Data: activitys,
-		}
+		Data: activitys,
+	}
 	fmt.Println("Complete.")
-	return &data,nil
+	return &data, nil
 
 }
 
@@ -142,31 +141,31 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 	}
 
 	var data = Activity{
-		Name:      		activity.Name,
-		Description: 	activity.Description,
-		ImageProfile:	activity.ImageProfile,
-		Type:			activity.Type,
-		OwnerId: 		activity.OwnerId,
-		Location:		activity.Location,
-		MaxParticipant:	int64(activity.MaxParticipant),
+		ActivityId:     activity.ID.Hex(),
+		Name:           activity.Name,
+		Description:    activity.Description,
+		ImageProfile:   activity.ImageProfile,
+		Type:           activity.Type,
+		OwnerId:        activity.OwnerId,
+		Location:       activity.Location,
+		MaxParticipant: int64(activity.MaxParticipant),
 		Participant:    activity.Participant,
-		Date:			activity.Date.String(),
-		Duration:		activity.Duration,
-		ChatId:			activity.ChatId,
-		ActivityId:     "",
+		Date:           activity.Date.String(),
+		Duration:       activity.Duration,
+		ChatId:         activity.ChatId,
 	}
 
 	return &data, nil
 }
 
 func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Response, error) {
-	
+
 	activityId := req.ActivityId
 
 	objId, _ := primitive.ObjectIDFromHex(activityId)
 
 	layout := "2006-01-02T15:04:05.000Z"
-	time, err := time.Parse(layout,req.Date)
+	time, err := time.Parse(layout, req.Date)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("")
@@ -174,17 +173,17 @@ func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Respons
 	}
 
 	update := bson.M{
-		"name":      		req.Name,
-		"description": 		req.Description,
-		"imageprofile":		req.ImageProfile,
-		"type":				req.Type,
-		"ownerid": 			req.OwnerId,
-		"location":			req.Location,
-		"maxparticipant":	int(req.MaxParticipant),
-		"participant":    	req.Participant,
-		"date":				time,
-		"duration":			req.Duration,
-		"chatId":			req.ChatId,
+		"name":           req.Name,
+		"description":    req.Description,
+		"imageprofile":   req.ImageProfile,
+		"type":           req.Type,
+		"ownerid":        req.OwnerId,
+		"location":       req.Location,
+		"maxparticipant": int(req.MaxParticipant),
+		"participant":    req.Participant,
+		"date":           time,
+		"duration":       req.Duration,
+		"chatId":         req.ChatId,
 	}
 
 	result, err := activityCollection.UpdateOne(ctx, bson.M{"_id": objId}, bson.M{"$set": update})
@@ -206,7 +205,7 @@ func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Respons
 			return nil, err
 		}
 	}
-	
+
 	res := Response{
 		Status:  200,
 		Message: "Success save activity information",
@@ -222,13 +221,13 @@ func (activityServer) DeleteActivity(ctx context.Context, req *ActivityId) (*Res
 	result, err := activityCollection.DeleteOne(ctx, bson.M{"_id": objId})
 
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	if result.DeletedCount < 1 {
 		res := Response{
 			Status:  404,
-			Message: "User with id " +activityId+" not found",
+			Message: "User with id " + activityId + " not found",
 		}
 		return &res, nil
 	}

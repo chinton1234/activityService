@@ -20,18 +20,18 @@ message ActivityId {
 }
 
 message Activity {
-    string Name = 1;
-    string Description = 2;
-    string ImageProfile = 3;
-    repeated string Type = 4;
-    string OwnerId = 5;
-    string Location = 6;
-    int64 MaxParticipant = 7;
-    repeated string Participant = 8;
-    string Date = 9;
-    int64 Duration = 10;
-    string ChatId = 11;
-    string ActivityId = 12;
+    string ActivityId = 1;
+    string Name = 2;
+    string Description = 3;
+    string ImageProfile = 4;
+    repeated string Type = 5;
+    string OwnerId = 6;
+    string Location = 7;
+    int64 MaxParticipant = 8;
+    repeated string Participant = 9;
+    string Date = 10;
+    int64 Duration = 11;
+    string ChatId = 12;
 }
 
 message ActivityList{
