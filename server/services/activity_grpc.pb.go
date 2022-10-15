@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityClient interface {
-	CreateActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error)
+	CreateActivity(ctx context.Context, in *ActivityForm, opts ...grpc.CallOption) (*Response, error)
 	GetActivitys(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ActivityList, error)
 	GetActivity(ctx context.Context, in *ActivityId, opts ...grpc.CallOption) (*Activity, error)
 	EditActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error)
@@ -37,7 +37,7 @@ func NewActivityClient(cc grpc.ClientConnInterface) ActivityClient {
 	return &activityClient{cc}
 }
 
-func (c *activityClient) CreateActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error) {
+func (c *activityClient) CreateActivity(ctx context.Context, in *ActivityForm, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/activity.activity/CreateActivity", in, out, opts...)
 	if err != nil {
@@ -86,7 +86,7 @@ func (c *activityClient) DeleteActivity(ctx context.Context, in *ActivityId, opt
 // All implementations must embed UnimplementedActivityServer
 // for forward compatibility
 type ActivityServer interface {
-	CreateActivity(context.Context, *Activity) (*Response, error)
+	CreateActivity(context.Context, *ActivityForm) (*Response, error)
 	GetActivitys(context.Context, *Empty) (*ActivityList, error)
 	GetActivity(context.Context, *ActivityId) (*Activity, error)
 	EditActivity(context.Context, *Activity) (*Response, error)
@@ -98,7 +98,7 @@ type ActivityServer interface {
 type UnimplementedActivityServer struct {
 }
 
-func (UnimplementedActivityServer) CreateActivity(context.Context, *Activity) (*Response, error) {
+func (UnimplementedActivityServer) CreateActivity(context.Context, *ActivityForm) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateActivity not implemented")
 }
 func (UnimplementedActivityServer) GetActivitys(context.Context, *Empty) (*ActivityList, error) {
@@ -127,7 +127,7 @@ func RegisterActivityServer(s grpc.ServiceRegistrar, srv ActivityServer) {
 }
 
 func _Activity_CreateActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Activity)
+	in := new(ActivityForm)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func _Activity_CreateActivity_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/activity.activity/CreateActivity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).CreateActivity(ctx, req.(*Activity))
+		return srv.(ActivityServer).CreateActivity(ctx, req.(*ActivityForm))
 	}
 	return interceptor(ctx, in, info, handler)
 }

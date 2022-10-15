@@ -3,10 +3,12 @@ syntax = "proto3";
 package activity;
 
 option go_package="./services";
-// import "google/protobuf/timestamp.proto";
+
+import "google/protobuf/timestamp.proto";
+
 
 service activity {
-    rpc CreateActivity(Activity) returns (Response);
+    rpc CreateActivity(ActivityForm) returns (Response);
     rpc GetActivitys(Empty) returns (ActivityList);
     rpc GetActivity(ActivityId) returns (Activity);
     rpc EditActivity(Activity) returns (Response);
@@ -19,19 +21,30 @@ message ActivityId {
   string id = 1;
 }
 
+message ActivityForm {
+  string Name = 1;
+  string Description = 2;
+  optional string ImageProfile = 3;
+  string OwnerId = 4;
+  string Location = 5;
+  int64 MaxParticipant = 6;
+  google.protobuf.Timestamp Date = 7;
+  float Duration = 8;
+}
+
+
 message Activity {
-    string ActivityId = 1;
-    string Name = 2;
-    string Description = 3;
-    string ImageProfile = 4;
-    repeated string Type = 5;
-    string OwnerId = 6;
-    string Location = 7;
-    int64 MaxParticipant = 8;
-    repeated string Participant = 9;
-    string Date = 10;
-    int64 Duration = 11;
-    string ChatId = 12;
+  string ActivityId = 1;
+  string Name = 2;
+  string Description = 3;
+  optional string ImageProfile = 4;
+  string OwnerId = 6;
+  string Location = 7;
+  int64 MaxParticipant = 8;
+  repeated string Participant = 9;
+  google.protobuf.Timestamp Date = 10;
+  float Duration = 11;
+  string ChatId = 12;
 }
 
 message ActivityList{
@@ -39,6 +52,6 @@ message ActivityList{
 }
 
 message Response {
-    int64 Status = 1;
-    string Message = 2;
-  }
+  int64 Status = 1;
+  string Message = 2;
+}

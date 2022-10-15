@@ -5,21 +5,22 @@ import (
 	"log"
 	"net"
 	"server/services"
-
+	"os"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	s := grpc.NewServer()
 
-	listener,err := net.Listen("tcp",":8080")
+	port := os.Getenv("PORT")
+	listener,err := net.Listen("tcp",":"+port)
 	if err != nil{
 		log.Fatal(err)
 	}
 
 	services.RegisterActivityServer(s, services.NewActivityServer())
 
-	fmt.Println("gRPC server listening on port 8080")
+	fmt.Println("gRPC server listening on port "+port)
 	err = s.Serve(listener)
 	if err != nil {
 		log.Fatal(err)

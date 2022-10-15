@@ -7,14 +7,16 @@ import (
 	"server/models"
 	"time"
 
-	"github.com/go-playground/validator"
+	// "github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var activityCollection *mongo.Collection = configs.GetCollection(configs.DB, "activitys")
-var validate = validator.New()
+
+// var validate = validator.New()
 
 type activityServer struct {
 }
@@ -25,7 +27,7 @@ func NewActivityServer() ActivityServer {
 
 func (activityServer) mustEmbedUnimplementedActivityServer() {}
 
-func (activityServer) CreateActivity(ctx context.Context, req *Activity) (*Response, error) {
+func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*Response, error) {
 	// var activity models.Activity
 
 	// if validationErr := validate.Struct(&activity); validationErr != nil {
@@ -35,26 +37,24 @@ func (activityServer) CreateActivity(ctx context.Context, req *Activity) (*Respo
 	// }
 
 	fmt.Println("create activity.")
-	layout := "2006-01-02T15:04:05.000Z"
-	time, err := time.Parse(layout, req.Date)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("")
-		return nil, err
-	}
+	// layout := "2006-01-02T15:04:05.000Z"
+	// time, err := time.Parse(layout, req.Date)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	fmt.Println("")
+	// 	return nil, err
+	// }
 
 	newUser := models.Activity{
 		Name:           req.Name,
 		Description:    req.Description,
-		ImageProfile:   req.ImageProfile,
-		Type:           req.Type,
 		OwnerId:        req.OwnerId,
 		Location:       req.Location,
 		MaxParticipant: int(req.MaxParticipant),
-		Participant:    req.Participant,
-		Date:           time,
+		Participant:    []string{req.OwnerId},
+		Date:           req.Date.AsTime(),
 		Duration:       req.Duration,
-		ChatId:         req.ChatId,
+		ChatId:         "",
 	}
 
 	result, err := activityCollection.InsertOne(ctx, newUser)
@@ -103,13 +103,11 @@ func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, erro
 			ActivityId:     req.ID.Hex(),
 			Name:           req.Name,
 			Description:    req.Description,
-			ImageProfile:   req.ImageProfile,
-			Type:           req.Type,
 			OwnerId:        req.OwnerId,
 			Location:       req.Location,
 			MaxParticipant: int64(req.MaxParticipant),
 			Participant:    req.Participant,
-			Date:           req.Date.String(),
+			Date:           timestamppb.New(req.Date),
 			Duration:       req.Duration,
 			ChatId:         req.ChatId,
 		}
@@ -144,13 +142,11 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 		ActivityId:     activity.ID.Hex(),
 		Name:           activity.Name,
 		Description:    activity.Description,
-		ImageProfile:   activity.ImageProfile,
-		Type:           activity.Type,
 		OwnerId:        activity.OwnerId,
 		Location:       activity.Location,
 		MaxParticipant: int64(activity.MaxParticipant),
 		Participant:    activity.Participant,
-		Date:           activity.Date.String(),
+		Date:           timestamppb.New(activity.Date),
 		Duration:       activity.Duration,
 		ChatId:         activity.ChatId,
 	}
@@ -164,24 +160,14 @@ func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Respons
 
 	objId, _ := primitive.ObjectIDFromHex(activityId)
 
-	layout := "2006-01-02T15:04:05.000Z"
-	time, err := time.Parse(layout, req.Date)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("")
-		return nil, err
-	}
-
 	update := bson.M{
 		"name":           req.Name,
 		"description":    req.Description,
-		"imageprofile":   req.ImageProfile,
-		"type":           req.Type,
 		"ownerid":        req.OwnerId,
 		"location":       req.Location,
 		"maxparticipant": int(req.MaxParticipant),
 		"participant":    req.Participant,
-		"date":           time,
+		"date":           req.Date.AsTime(),
 		"duration":       req.Duration,
 		"chatId":         req.ChatId,
 	}
