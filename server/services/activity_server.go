@@ -45,11 +45,11 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 	// 	return nil, err
 	// }
 
-	newUser := models.Activity{
+	newAct := models.ActCreate{
 		Name:           req.Name,
 		Description:    req.Description,
-		ActivityType:	req.ActivityType,
-		ImageProfile: 	*req.ImageProfile,
+		ActivityType:   req.ActivityType,
+		ImageProfile:   *req.ImageProfile,
 		OwnerId:        req.OwnerId,
 		Location:       req.Location,
 		MaxParticipant: int(req.MaxParticipant),
@@ -58,7 +58,7 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 		ChatId:         "",
 	}
 
-	result, err := activityCollection.InsertOne(ctx, newUser)
+	result, err := activityCollection.InsertOne(ctx, newAct)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("")
@@ -107,7 +107,7 @@ func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, erro
 			Name:           req.Name,
 			Description:    req.Description,
 			ActivityType:   req.ActivityType,
-    		ImageProfile:	req.ImageProfile,
+			ImageProfile:   req.ImageProfile,
 			OwnerId:        req.OwnerId,
 			Location:       req.Location,
 			MaxParticipant: int64(req.MaxParticipant),
@@ -150,11 +150,11 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 		Name:           activity.Name,
 		Description:    activity.Description,
 		ActivityType:   activity.ActivityType,
-    	ImageProfile:	activity.ImageProfile,
+		ImageProfile:   activity.ImageProfile,
 		OwnerId:        activity.OwnerId,
 		Location:       activity.Location,
 		MaxParticipant: int64(activity.MaxParticipant),
-		Participant:    &participantId ,
+		Participant:    &participantId,
 		Date:           timestamppb.New(activity.Date),
 		Duration:       activity.Duration,
 		ChatId:         activity.ChatId,
@@ -172,8 +172,8 @@ func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Respons
 	update := bson.M{
 		"name":           req.Name,
 		"description":    req.Description,
-		"activityType":	  req.ActivityType,
-		"imageProfile":	  req.ImageProfile,
+		"activityType":   req.ActivityType,
+		"imageProfile":   req.ImageProfile,
 		"ownerid":        req.OwnerId,
 		"location":       req.Location,
 		"maxparticipant": int(req.MaxParticipant),
