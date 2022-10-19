@@ -11,13 +11,17 @@ type Activity struct{
 	ID    				primitive.ObjectID `bson:"_id" json:"id,omitempty"`
 	Name 				string `json:"activityName" validate:"required"`
 	Description 		string  `json: "description"`
-	// ImageProfile 		string `json: "imageProfile"`
+	ActivityType		[]string `json: "activityType"`
+	ImageProfile 		string `json: "imageProfile"`
 	OwnerId 			string `json: "ownerId" validate:"required"`
 	Location			string `json: "location" validate:"required"`
 	MaxParticipant		int `json: "maxParticipant" validate:"required"`
-	Participant			[]string `json: "participant"`
+	Participant		primitive.ObjectID `bson:"_id" json:"id,omitempty"`
 	Date				time.Time `json: "date"`
 	Duration			float32 `json: "duration"`
 	ChatId   			string `json: "chatId"`
 } 
 // activityName   description   imageProfile   activityType   ownerId    location  maxParticipant   participant(list) date   duration  chatId    
+
+
+

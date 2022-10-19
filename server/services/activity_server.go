@@ -48,10 +48,11 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 	newUser := models.Activity{
 		Name:           req.Name,
 		Description:    req.Description,
+		ActivityType:	req.ActivityType,
+		ImageProfile: 	*req.ImageProfile,
 		OwnerId:        req.OwnerId,
 		Location:       req.Location,
 		MaxParticipant: int(req.MaxParticipant),
-		Participant:    []string{req.OwnerId},
 		Date:           req.Date.AsTime(),
 		Duration:       req.Duration,
 		ChatId:         "",
@@ -99,14 +100,18 @@ func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, erro
 			return nil, err
 		}
 
+		participantId := req.Participant.Hex()
+
 		var one = Activity{
 			ActivityId:     req.ID.Hex(),
 			Name:           req.Name,
 			Description:    req.Description,
+			ActivityType:   req.ActivityType,
+    		ImageProfile:	req.ImageProfile,
 			OwnerId:        req.OwnerId,
 			Location:       req.Location,
 			MaxParticipant: int64(req.MaxParticipant),
-			Participant:    req.Participant,
+			Participant:    &participantId,
 			Date:           timestamppb.New(req.Date),
 			Duration:       req.Duration,
 			ChatId:         req.ChatId,
@@ -138,14 +143,18 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 		return nil, err
 	}
 
+	participantId := activity.Participant.Hex()
+
 	var data = Activity{
 		ActivityId:     activity.ID.Hex(),
 		Name:           activity.Name,
 		Description:    activity.Description,
+		ActivityType:   activity.ActivityType,
+    	ImageProfile:	activity.ImageProfile,
 		OwnerId:        activity.OwnerId,
 		Location:       activity.Location,
 		MaxParticipant: int64(activity.MaxParticipant),
-		Participant:    activity.Participant,
+		Participant:    &participantId ,
 		Date:           timestamppb.New(activity.Date),
 		Duration:       activity.Duration,
 		ChatId:         activity.ChatId,
@@ -163,10 +172,11 @@ func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Respons
 	update := bson.M{
 		"name":           req.Name,
 		"description":    req.Description,
+		"activityType":	  req.ActivityType,
+		"imageProfile":	  req.ImageProfile,
 		"ownerid":        req.OwnerId,
 		"location":       req.Location,
 		"maxparticipant": int(req.MaxParticipant),
-		"participant":    req.Participant,
 		"date":           req.Date.AsTime(),
 		"duration":       req.Duration,
 		"chatId":         req.ChatId,
