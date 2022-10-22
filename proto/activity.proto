@@ -25,7 +25,7 @@ message ActivityForm {
   string Name = 1;
   string Description = 2;
   repeated string ActivityType = 3;
-  optional string ImageProfile = 4;
+  string ImageProfile = 4;
   string OwnerId = 5;
   string Location = 6;
   int64 MaxParticipant = 7;

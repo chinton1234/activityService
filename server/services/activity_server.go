@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"server/configs"
 	"server/models"
+
+	"server/RPC"
 	"time"
 
 	// "github.com/go-playground/validator"
@@ -44,12 +46,12 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 	// 	fmt.Println("")
 	// 	return nil, err
 	// }
-
+	fmt.Println(req)
 	newAct := models.ActCreate{
 		Name:           req.Name,
 		Description:    req.Description,
 		ActivityType:   req.ActivityType,
-		ImageProfile:   *req.ImageProfile,
+		ImageProfile:   req.ImageProfile,
 		OwnerId:        req.OwnerId,
 		Location:       req.Location,
 		MaxParticipant: int(req.MaxParticipant),
@@ -58,17 +60,59 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 		ChatId:         "",
 	}
 
-	result, err := activityCollection.InsertOne(ctx, newAct)
+	owner := req.OwnerId
+
+	result1, err := activityCollection.InsertOne(ctx, newAct)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("")
 		return nil, err
 	}
 
-	ID := fmt.Sprintf("%v", result.InsertedID)
+	data := result1.InsertedID.(primitive.ObjectID).Hex()
+	
+	var matchingfunction RPC.Export
+	text := "create " + data + " " + owner
+	fmt.Println(text)
+	mId,err := matchingfunction.Matching(text)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("")
+		return nil, err
+	}
+
+	objID, err := primitive.ObjectIDFromHex(mId)
+	if err != nil {
+	panic(err)
+}
+
+	update := bson.M{
+		"matchingId":  objID,
+	}
+
+	result, err := activityCollection.UpdateOne(ctx, bson.M{"_id": result1.InsertedID.(primitive.ObjectID)}, bson.M{"$set": update})
+
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("")
+		return nil, err
+	}
+
+	//get updated user details
+	var updatedActivity models.Activity
+	if result.MatchedCount == 1 {
+		err := activityCollection.FindOne(ctx, bson.M{"_id": result1.InsertedID.(primitive.ObjectID)}).Decode(&updatedActivity)
+
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("")
+			return nil, err
+		}
+	}
+
 	res := Response{
 		Status:  200,
-		Message: ID,
+		Message: data,
 	}
 
 	fmt.Println("Complete.")
@@ -213,6 +257,18 @@ func (activityServer) DeleteActivity(ctx context.Context, req *ActivityId) (*Res
 
 	activityId := req.Id
 	objId, _ := primitive.ObjectIDFromHex(activityId)
+
+	var activity models.Activity
+	err := activityCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&activity)
+
+	matchingId := activity.Participant.Hex()
+
+	text := "delete " + matchingId
+	fmt.Println(text)
+	var matchingfunction RPC.Export
+	data,err := matchingfunction.Matching(text)
+
+	fmt.Println(data)
 
 	result, err := activityCollection.DeleteOne(ctx, bson.M{"_id": objId})
 

@@ -23,7 +23,6 @@ type ActCreate struct{
 
 
 
-
 type Activity struct{
 	ID    				primitive.ObjectID `bson:"_id" json:"id,omitempty"`
 	Name 				string `json:"activityName" validate:"required"`
