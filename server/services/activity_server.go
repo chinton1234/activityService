@@ -40,6 +40,7 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 
 	fmt.Println("create activity.")
 
+	fmt.Println(req)
 	i, err := strconv.ParseInt(req.Date, 10, 64)
 	if err != nil {
 		panic(err)
