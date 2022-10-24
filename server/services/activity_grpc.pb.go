@@ -25,7 +25,7 @@ type ActivityClient interface {
 	CreateActivity(ctx context.Context, in *ActivityForm, opts ...grpc.CallOption) (*Response, error)
 	GetActivitys(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ActivityList, error)
 	GetActivity(ctx context.Context, in *ActivityId, opts ...grpc.CallOption) (*Activity, error)
-	EditActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error)
+	EditActivity(ctx context.Context, in *ActivityEdit, opts ...grpc.CallOption) (*Response, error)
 	DeleteActivity(ctx context.Context, in *ActivityId, opts ...grpc.CallOption) (*Response, error)
 }
 
@@ -64,7 +64,7 @@ func (c *activityClient) GetActivity(ctx context.Context, in *ActivityId, opts .
 	return out, nil
 }
 
-func (c *activityClient) EditActivity(ctx context.Context, in *Activity, opts ...grpc.CallOption) (*Response, error) {
+func (c *activityClient) EditActivity(ctx context.Context, in *ActivityEdit, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/activity.activity/EditActivity", in, out, opts...)
 	if err != nil {
@@ -89,7 +89,7 @@ type ActivityServer interface {
 	CreateActivity(context.Context, *ActivityForm) (*Response, error)
 	GetActivitys(context.Context, *Empty) (*ActivityList, error)
 	GetActivity(context.Context, *ActivityId) (*Activity, error)
-	EditActivity(context.Context, *Activity) (*Response, error)
+	EditActivity(context.Context, *ActivityEdit) (*Response, error)
 	DeleteActivity(context.Context, *ActivityId) (*Response, error)
 	mustEmbedUnimplementedActivityServer()
 }
@@ -107,7 +107,7 @@ func (UnimplementedActivityServer) GetActivitys(context.Context, *Empty) (*Activ
 func (UnimplementedActivityServer) GetActivity(context.Context, *ActivityId) (*Activity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActivity not implemented")
 }
-func (UnimplementedActivityServer) EditActivity(context.Context, *Activity) (*Response, error) {
+func (UnimplementedActivityServer) EditActivity(context.Context, *ActivityEdit) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditActivity not implemented")
 }
 func (UnimplementedActivityServer) DeleteActivity(context.Context, *ActivityId) (*Response, error) {
@@ -181,7 +181,7 @@ func _Activity_GetActivity_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _Activity_EditActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Activity)
+	in := new(ActivityEdit)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func _Activity_EditActivity_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/activity.activity/EditActivity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).EditActivity(ctx, req.(*Activity))
+		return srv.(ActivityServer).EditActivity(ctx, req.(*ActivityEdit))
 	}
 	return interceptor(ctx, in, info, handler)
 }

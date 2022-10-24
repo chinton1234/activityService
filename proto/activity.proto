@@ -4,14 +4,12 @@ package activity;
 
 option go_package="./services";
 
-import "google/protobuf/timestamp.proto";
-
 
 service activity {
     rpc CreateActivity(ActivityForm) returns (Response);
     rpc GetActivitys(Empty) returns (ActivityList);
     rpc GetActivity(ActivityId) returns (Activity);
-    rpc EditActivity(Activity) returns (Response);
+    rpc EditActivity(ActivityEdit) returns (Response);
     rpc DeleteActivity(ActivityId) returns (Response);
 }
 
@@ -29,10 +27,9 @@ message ActivityForm {
   string OwnerId = 5;
   string Location = 6;
   int64 MaxParticipant = 7;
-  google.protobuf.Timestamp Date = 8;
+  string Date = 8;
   float Duration = 9;
 }
-
 
 message Activity {
   string ActivityId = 1;
@@ -43,10 +40,24 @@ message Activity {
   string OwnerId = 6;
   string Location = 7;
   int64 MaxParticipant = 8;
-  optional string Participant = 9;
-  google.protobuf.Timestamp Date = 10;
+  string Participant = 9;
+  string Date = 10;
   float Duration = 11;
   string ChatId = 12;
+}
+
+message ActivityEdit {
+  string ActivityId = 1;
+  string Name = 2;
+  string Description = 3;
+  repeated string ActivityType = 4;
+  string ImageProfile = 5;
+  string OwnerId = 6;
+  string Location = 7;
+  int64 MaxParticipant = 8;
+  string Date = 9;
+  float Duration = 10;
+  string ChatId = 11;
 }
 
 message ActivityList{

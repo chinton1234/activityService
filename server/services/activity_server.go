@@ -13,7 +13,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var activityCollection *mongo.Collection = configs.GetCollection(configs.DB, "activitys")
@@ -39,14 +38,14 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 	// }
 
 	fmt.Println("create activity.")
-	// layout := "2006-01-02T15:04:05.000Z"
-	// time, err := time.Parse(layout, req.Date)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	fmt.Println("")
-	// 	return nil, err
-	// }
-	fmt.Println(req)
+	layout := "2006-01-02T15:04:05.000Z"
+	time, err := time.Parse(layout, req.Date)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("")
+		return nil, err
+	}
+
 	newAct := models.ActCreate{
 		Name:           req.Name,
 		Description:    req.Description,
@@ -55,7 +54,7 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 		OwnerId:        req.OwnerId,
 		Location:       req.Location,
 		MaxParticipant: int(req.MaxParticipant),
-		Date:           req.Date.AsTime(),
+		Date:           time,
 		Duration:       req.Duration,
 		ChatId:         "",
 	}
@@ -70,11 +69,11 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 	}
 
 	data := result1.InsertedID.(primitive.ObjectID).Hex()
-	
+
 	var matchingfunction RPC.Export
 	text := "create " + data + " " + owner
 	fmt.Println(text)
-	mId,err := matchingfunction.Matching(text)
+	mId, err := matchingfunction.Matching(text)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("")
@@ -83,11 +82,11 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 
 	objID, err := primitive.ObjectIDFromHex(mId)
 	if err != nil {
-	panic(err)
-}
+		panic(err)
+	}
 
 	update := bson.M{
-		"matchingId":  objID,
+		"matchingId": objID,
 	}
 
 	result, err := activityCollection.UpdateOne(ctx, bson.M{"_id": result1.InsertedID.(primitive.ObjectID)}, bson.M{"$set": update})
@@ -155,8 +154,8 @@ func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, erro
 			OwnerId:        req.OwnerId,
 			Location:       req.Location,
 			MaxParticipant: int64(req.MaxParticipant),
-			Participant:    &participantId,
-			Date:           timestamppb.New(req.Date),
+			Participant:    participantId,
+			Date:           req.Date.String(),
 			Duration:       req.Duration,
 			ChatId:         req.ChatId,
 		}
@@ -198,8 +197,8 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 		OwnerId:        activity.OwnerId,
 		Location:       activity.Location,
 		MaxParticipant: int64(activity.MaxParticipant),
-		Participant:    &participantId,
-		Date:           timestamppb.New(activity.Date),
+		Participant:    participantId,
+		Date:           activity.Date.String(),
 		Duration:       activity.Duration,
 		ChatId:         activity.ChatId,
 	}
@@ -207,11 +206,19 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 	return &data, nil
 }
 
-func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Response, error) {
+func (activityServer) EditActivity(ctx context.Context, req *ActivityEdit) (*Response, error) {
 
 	activityId := req.ActivityId
 
 	objId, _ := primitive.ObjectIDFromHex(activityId)
+
+	layout := "2006-01-02T15:04:05.000Z"
+	time, err := time.Parse(layout, req.Date)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("")
+		return nil, err
+	}
 
 	update := bson.M{
 		"name":           req.Name,
@@ -221,7 +228,7 @@ func (activityServer) EditActivity(ctx context.Context, req *Activity) (*Respons
 		"ownerid":        req.OwnerId,
 		"location":       req.Location,
 		"maxparticipant": int(req.MaxParticipant),
-		"date":           req.Date.AsTime(),
+		"date":           time,
 		"duration":       req.Duration,
 		"chatId":         req.ChatId,
 	}
@@ -266,7 +273,7 @@ func (activityServer) DeleteActivity(ctx context.Context, req *ActivityId) (*Res
 	text := "delete " + matchingId
 	fmt.Println(text)
 	var matchingfunction RPC.Export
-	data,err := matchingfunction.Matching(text)
+	data, err := matchingfunction.Matching(text)
 
 	fmt.Println(data)
 
