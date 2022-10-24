@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"server/configs"
 	"server/models"
+	"strconv"
 
 	"server/RPC"
 	"time"
@@ -38,13 +39,12 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 	// }
 
 	fmt.Println("create activity.")
-	layout := "2006-01-02T15:04:05.000Z"
-	time, err := time.Parse(layout, req.Date)
+
+	i, err := strconv.ParseInt(req.Date, 10, 64)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("")
-		return nil, err
+		panic(err)
 	}
+	time := time.Unix(i, 0)
 
 	newAct := models.ActCreate{
 		Name:           req.Name,
@@ -212,13 +212,11 @@ func (activityServer) EditActivity(ctx context.Context, req *ActivityEdit) (*Res
 
 	objId, _ := primitive.ObjectIDFromHex(activityId)
 
-	layout := "2006-01-02T15:04:05.000Z"
-	time, err := time.Parse(layout, req.Date)
+	i, err := strconv.ParseInt(req.Date, 10, 64)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println("")
-		return nil, err
+		panic(err)
 	}
+	time := time.Unix(i, 0)
 
 	update := bson.M{
 		"name":           req.Name,
@@ -267,6 +265,9 @@ func (activityServer) DeleteActivity(ctx context.Context, req *ActivityId) (*Res
 
 	var activity models.Activity
 	err := activityCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&activity)
+	if err != nil {
+		return nil, err
+	}
 
 	matchingId := activity.Participant.Hex()
 
@@ -274,6 +275,9 @@ func (activityServer) DeleteActivity(ctx context.Context, req *ActivityId) (*Res
 	fmt.Println(text)
 	var matchingfunction RPC.Export
 	data, err := matchingfunction.Matching(text)
+	if err != nil {
+		return nil, err
+	}
 
 	fmt.Println(data)
 
