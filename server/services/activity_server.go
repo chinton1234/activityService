@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"server/configs"
 	"server/models"
-	"strconv"
 
 	"server/RPC"
 	"time"
@@ -40,13 +39,6 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 
 	fmt.Println("create activity.")
 
-	fmt.Println(req)
-	i, err := strconv.ParseInt(req.Date, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	time := time.Unix(i, 0)
-
 	newAct := models.ActCreate{
 		Name:           req.Name,
 		Description:    req.Description,
@@ -55,7 +47,7 @@ func (activityServer) CreateActivity(ctx context.Context, req *ActivityForm) (*R
 		OwnerId:        req.OwnerId,
 		Location:       req.Location,
 		MaxParticipant: int(req.MaxParticipant),
-		Date:           time,
+		Date:           req.Date,
 		Duration:       req.Duration,
 		ChatId:         "",
 	}
@@ -156,7 +148,7 @@ func (activityServer) GetActivitys(context.Context, *Empty) (*ActivityList, erro
 			Location:       req.Location,
 			MaxParticipant: int64(req.MaxParticipant),
 			Participant:    participantId,
-			Date:           req.Date.String(),
+			Date:           req.Date,
 			Duration:       req.Duration,
 			ChatId:         req.ChatId,
 		}
@@ -199,7 +191,7 @@ func (activityServer) GetActivity(ctx context.Context, req *ActivityId) (*Activi
 		Location:       activity.Location,
 		MaxParticipant: int64(activity.MaxParticipant),
 		Participant:    participantId,
-		Date:           activity.Date.String(),
+		Date:           activity.Date,
 		Duration:       activity.Duration,
 		ChatId:         activity.ChatId,
 	}
@@ -213,12 +205,6 @@ func (activityServer) EditActivity(ctx context.Context, req *ActivityEdit) (*Res
 
 	objId, _ := primitive.ObjectIDFromHex(activityId)
 
-	i, err := strconv.ParseInt(req.Date, 10, 64)
-	if err != nil {
-		panic(err)
-	}
-	time := time.Unix(i, 0)
-
 	update := bson.M{
 		"name":           req.Name,
 		"description":    req.Description,
@@ -227,7 +213,7 @@ func (activityServer) EditActivity(ctx context.Context, req *ActivityEdit) (*Res
 		"ownerid":        req.OwnerId,
 		"location":       req.Location,
 		"maxparticipant": int(req.MaxParticipant),
-		"date":           time,
+		"date":           req.Date,
 		"duration":       req.Duration,
 		"chatId":         req.ChatId,
 	}

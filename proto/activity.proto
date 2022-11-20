@@ -5,7 +5,6 @@ package activity;
 option go_package="./services";
 
 
-
 service activity {
     rpc CreateActivity(ActivityForm) returns (Response);
     rpc GetActivitys(Empty) returns (ActivityList);

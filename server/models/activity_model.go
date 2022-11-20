@@ -1,7 +1,6 @@
 package models
 
 import (
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -15,7 +14,7 @@ type ActCreate struct{
 	Location			string `json: "location" validate:"required"`
 	MaxParticipant		int `json: "maxParticipant" validate:"required"`
 	Participant			primitive.ObjectID `bson:"matchingId" json:"matchingId,omitempty"`
-	Date				time.Time `json: "date"`
+	Date				string `json: "date"`
 	Duration			float32 `json: "duration"`
 	ChatId   			string `json: "chatId"`
 } 
@@ -33,7 +32,7 @@ type Activity struct{
 	Location			string `json: "location" validate:"required"`
 	MaxParticipant		int `json: "maxParticipant" validate:"required"`
 	Participant			primitive.ObjectID `bson:"matchingId" json:"matchingId,omitempty"`
-	Date				time.Time `json: "date"`
+	Date				string `json: "date"`
 	Duration			float32 `json: "duration"`
 	ChatId   			string `json: "chatId"`
 } 
